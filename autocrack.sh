@@ -26,7 +26,7 @@ select word in "${interfaces[*]}"; do
         printf '"%s" is not a valid choice\n' "$REPLY" >&2
     else
         user_in="$((REPLY - 1))"
-		interface="$word"
+		interface="$word" 
 		#DEBUG
         echo "$interface"
         break
