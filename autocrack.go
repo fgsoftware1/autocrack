@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"strings"
 )
 
 var (
@@ -74,21 +75,27 @@ func monitor() {
 		log.Fatal(err)
 	}
 
-	Ssid = append(Ssid, ssidOut)
+	Ssid = strings.Split(ssidOut, "\n")
 	Bssid = append(Bssid, bssidOut)
+
+	//DEBUG
+	fmt.Print("\x1b[38;5;124m")
+	fmt.Print("DEBUG \n")
+	fmt.Print("\x1b[38;5;141m")
+	fmt.Println(Ssid)
 
 	for index, element := range Ssid {
 		fmt.Print("\x1b[38;5;11m\n")
 		fmt.Println(index, element)
-		fmt.Print("\x1b[38;5;13m")
-		fmt.Println("choose network index: ")
-		var net int
-		fmt.Scanln(&net)
-		Net = Ssid[net]
-		isPresent := arrayContains(Ssid, Net)
-		if !isPresent {
-			panic("Selected index doesn't exist")
-		}
+	}
+	fmt.Print("\x1b[38;5;13m")
+	fmt.Println("choose network index: ")
+	var net int
+	fmt.Scanln(&net)
+	Net = Ssid[net]
+	isPresent := arrayContains(Ssid, Net)
+	if !isPresent {
+		panic("Selected index doesn't exist")
 	}
 	//DEBUG
 	fmt.Print("\x1b[38;5;124m")
