@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os/exec"
@@ -8,6 +9,7 @@ import (
 )
 
 var (
+	Debug bool
 	Inter string
 	Net   string
 	BSSID string
@@ -15,6 +17,10 @@ var (
 )
 
 func main() {
+	debug := flag.Bool("debug", false, "define debug true/false false is default")
+	flag.Parse()
+	Debug = *debug
+
 	setup()
 	monitor()
 }
@@ -27,32 +33,43 @@ func setup() {
 	scanCommand := "ip link | awk '/state UP/{print $2a;getline}' | awk '{ print substr( $0, 1, length($0)-1) }'"
 	scan, err := exec.Command("sh", "-c", scanCommand).Output()
 	scanOut := string(scan)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	interfaces = append(interfaces, scanOut)
+	interfaces = strings.Split(scanOut, "\n")
+	interfaces[len(interfaces)-1] = ""
+	interfaces = interfaces[:len(interfaces)-1]
+
+	//DEBUG
+	if Debug == true {
+		fmt.Print("\x1b[38;5;124m")
+		fmt.Print("DEBUG \n")
+		fmt.Print("\x1b[38;5;141m")
+		fmt.Print(interfaces, "\n")
+	}
 
 	for index, element := range interfaces {
 		fmt.Print("\x1b[38;5;11m\n")
 		fmt.Println(index, element)
-		fmt.Print("\x1b[38;5;13m")
-		fmt.Println("choose interface index: ")
-		var inter int
-		fmt.Scanln(&inter)
-		Inter = interfaces[inter]
-		isPresent := arrayContains(interfaces, Inter)
-		if !isPresent {
-			panic("Selected index doesn't exist")
-		}
+	}
+	fmt.Print("\x1b[38;5;13m")
+	fmt.Println("choose interface index: ")
+	var inter int
+	fmt.Scanln(&inter)
+	Inter = interfaces[inter]
+	isPresent := arrayContains(interfaces, Inter)
+	if !isPresent {
+		panic("Selected index doesn't exist")
 	}
 
 	//DEBUG
-	fmt.Print("\x1b[38;5;124m")
-	fmt.Print("DEBUG \n")
-	fmt.Print("\x1b[38;5;141m")
-	fmt.Print("interface selected: " + Inter + "\n")
+	if(Debug == true){
+		fmt.Print("\x1b[38;5;124m")
+		fmt.Print("DEBUG \n")
+		fmt.Print("\x1b[38;5;141m")
+		fmt.Print("interface selected: " + Inter + "\n")
+	}
 }
 
 func monitor() {
@@ -76,13 +93,21 @@ func monitor() {
 	}
 
 	Ssid = strings.Split(ssidOut, "\n")
-	Bssid = append(Bssid, bssidOut)
+	Ssid[len(Ssid)-1] = ""
+	Ssid = Ssid[:len(Ssid)-1]
+
+	Bssid = strings.Split(bssidOut, "\n")
+	Bssid[len(Bssid)-1] = ""
+	Bssid = Bssid[:len(Bssid)-1]
 
 	//DEBUG
-	fmt.Print("\x1b[38;5;124m")
-	fmt.Print("DEBUG \n")
-	fmt.Print("\x1b[38;5;141m")
-	fmt.Println(Ssid)
+	if(Debug == true){
+		fmt.Print("\x1b[38;5;124m")
+		fmt.Print("DEBUG \n")
+		fmt.Print("\x1b[38;5;141m")
+		fmt.Print(Ssid, "\n")
+		fmt.Print(Bssid, "\n")
+	}
 
 	for index, element := range Ssid {
 		fmt.Print("\x1b[38;5;11m\n")
@@ -97,12 +122,18 @@ func monitor() {
 	if !isPresent {
 		panic("Selected index doesn't exist")
 	}
+	SSID = Ssid[net]
+	BSSID = Bssid[net]
+
 	//DEBUG
-	fmt.Print("\x1b[38;5;124m")
-	fmt.Print("DEBUG \n")
-	fmt.Print("\x1b[38;5;141m")
-	fmt.Print("network selected: " + Net + "\n")
+	if(Debug == true){
+		fmt.Print("\x1b[38;5;124m")
+		fmt.Print("DEBUG \n")
+		fmt.Print("\x1b[38;5;141mBBSID\n", "\x1b[38;5;81m"+SSID, "\n")
+		fmt.Print("\x1b[38;5;141mBSSID\n", "\x1b[38;5;81m"+BSSID, "\n")
+	}
 }
+
 func arrayContains(sl []string, name string) bool {
 	for _, value := range sl {
 		if value == name {
