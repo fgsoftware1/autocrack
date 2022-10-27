@@ -64,7 +64,7 @@ func setup() {
 	}
 
 	//DEBUG
-	if(Debug == true){
+	if Debug == true {
 		fmt.Print("\x1b[38;5;124m")
 		fmt.Print("DEBUG \n")
 		fmt.Print("\x1b[38;5;141m")
@@ -101,7 +101,7 @@ func monitor() {
 	Bssid = Bssid[:len(Bssid)-1]
 
 	//DEBUG
-	if(Debug == true){
+	if Debug == true {
 		fmt.Print("\x1b[38;5;124m")
 		fmt.Print("DEBUG \n")
 		fmt.Print("\x1b[38;5;141m")
@@ -126,7 +126,7 @@ func monitor() {
 	BSSID = Bssid[net]
 
 	//DEBUG
-	if(Debug == true){
+	if Debug == true {
 		fmt.Print("\x1b[38;5;124m")
 		fmt.Print("DEBUG \n")
 		fmt.Print("\x1b[38;5;141mBBSID\n", "\x1b[38;5;81m"+SSID, "\n")
