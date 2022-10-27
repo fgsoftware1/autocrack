@@ -4,6 +4,6 @@ autocrack
 
 **Usage**
 
-.. usage::
-    
-    docs/usage.rst
+.. code:: bash
+
+    go run autocrack.go [-debug=(true|false)]
