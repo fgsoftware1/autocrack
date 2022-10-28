@@ -14,6 +14,7 @@ var (
 	Net   string
 	BSSID string
 	SSID  string
+	CH 	  string
 )
 
 func main() {
@@ -75,6 +76,7 @@ func setup() {
 func monitor() {
 	Ssid := []string{}
 	Bssid := []string{}
+	Channel := []string{}
 
 	fmt.Print("\x1b[38;5;4mLooking for available networks...\n")
 
@@ -92,6 +94,13 @@ func monitor() {
 		log.Fatal(err)
 	}
 
+	channelCommand := "nmcli -f CHAN device wifi | awk 'NR>1'"
+	channel, err := exec.Command("sh", "-c", channelCommand).Output()
+	channelOut := string(channel)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	Ssid = strings.Split(ssidOut, "\n")
 	Ssid[len(Ssid)-1] = ""
 	Ssid = Ssid[:len(Ssid)-1]
@@ -100,6 +109,10 @@ func monitor() {
 	Bssid[len(Bssid)-1] = ""
 	Bssid = Bssid[:len(Bssid)-1]
 
+	Channel = strings.Split(channelOut, "\n")
+	Channel[len(Channel)-1] = ""
+	Channel = Channel[:len(Channel)-1]
+
 	//DEBUG
 	if Debug == true {
 		fmt.Print("\x1b[38;5;124m")
@@ -107,8 +120,9 @@ func monitor() {
 		fmt.Print("\x1b[38;5;141m")
 		fmt.Print(Ssid, "\n")
 		fmt.Print(Bssid, "\n")
+		fmt.Print(Channel, "\n")
 	}
-
+	//SSID
 	for index, element := range Ssid {
 		fmt.Print("\x1b[38;5;11m\n")
 		fmt.Println(index, element)
@@ -122,15 +136,18 @@ func monitor() {
 	if !isPresent {
 		panic("Selected index doesn't exist")
 	}
-	SSID = Ssid[net]
-	BSSID = Bssid[net]
+
+	SSID 	= Ssid[net]
+	BSSID 	= Bssid[net]
+	CH 		= Channel[net]
 
 	//DEBUG
 	if Debug == true {
 		fmt.Print("\x1b[38;5;124m")
 		fmt.Print("DEBUG \n")
-		fmt.Print("\x1b[38;5;141mBBSID\n", "\x1b[38;5;81m"+SSID, "\n")
+		fmt.Print("\x1b[38;5;141mSSID\n", "\x1b[38;5;81m"+SSID, "\n")
 		fmt.Print("\x1b[38;5;141mBSSID\n", "\x1b[38;5;81m"+BSSID, "\n")
+		fmt.Print("\x1b[38;5;141mCH\n", "\x1b[38;5;81m"+CH, "\n")
 	}
 }
 
