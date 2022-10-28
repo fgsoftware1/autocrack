@@ -15,6 +15,7 @@ var (
 	BSSID string
 	SSID  string
 	CH 	  string
+	SERV  string
 )
 
 func main() {
@@ -24,12 +25,13 @@ func main() {
 
 	setup()
 	monitor()
+	check()
 }
 
 func setup() {
 	interfaces := []string{}
 
-	fmt.Print("\x1b[38;5;4m Looking for up network interfaces...\n")
+	fmt.Print("\x1b[38;5;4mLooking for up network interfaces...\n")
 
 	scanCommand := "ip link | awk '/state UP/{print $2a;getline}' | awk '{ print substr( $0, 1, length($0)-1) }'"
 	scan, err := exec.Command("sh", "-c", scanCommand).Output()
@@ -74,8 +76,8 @@ func setup() {
 }
 
 func monitor() {
-	Ssid := []string{}
-	Bssid := []string{}
+	Ssid 	:= []string{}
+	Bssid 	:= []string{}
 	Channel := []string{}
 
 	fmt.Print("\x1b[38;5;4mLooking for available networks...\n")
@@ -149,6 +151,17 @@ func monitor() {
 		fmt.Print("\x1b[38;5;141mBSSID\n", "\x1b[38;5;81m"+BSSID, "\n")
 		fmt.Print("\x1b[38;5;141mCH\n", "\x1b[38;5;81m"+CH, "\n")
 	}
+}
+
+func check(){
+	fmt.Print("\x1b[38;5;4mKilling conflictant processes...\n")
+	killCommand := "airmon-ng check kill"
+	kill, err := exec.Command("sh", "-c", killCommand).Output()
+	killOut := string(kill)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Print(killOut)
 }
 
 func arrayContains(sl []string, name string) bool {
