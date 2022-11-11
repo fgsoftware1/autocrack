@@ -14,8 +14,8 @@ var (
 	Net   string
 	BSSID string
 	SSID  string
-	CH 	  string
-	SERV  string
+	CH    string
+	SERV  []string
 )
 
 func main() {
@@ -76,8 +76,8 @@ func setup() {
 }
 
 func monitor() {
-	Ssid 	:= []string{}
-	Bssid 	:= []string{}
+	Ssid := []string{}
+	Bssid := []string{}
 	Channel := []string{}
 
 	fmt.Print("\x1b[38;5;4mLooking for available networks...\n")
@@ -139,9 +139,9 @@ func monitor() {
 		panic("Selected index doesn't exist")
 	}
 
-	SSID 	= Ssid[net]
-	BSSID 	= Bssid[net]
-	CH 		= Channel[net]
+	SSID = Ssid[net]
+	BSSID = Bssid[net]
+	CH = Channel[net]
 
 	//DEBUG
 	if Debug == true {
@@ -153,15 +153,35 @@ func monitor() {
 	}
 }
 
-func check(){
+func check() {
+	Serv := []string{}
+
 	fmt.Print("\x1b[38;5;4mKilling conflictant processes...\n")
-	killCommand := "airmon-ng check kill"
+	killCommand := "airmon-ng check kill | awk '{print $2}'"
 	kill, err := exec.Command("sh", "-c", killCommand).Output()
 	killOut := string(kill)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Print(killOut)
+
+	Serv = strings.Split(killOut, "\n")
+	Serv = Serv[4:]
+	SERV = Serv
+
+	//DEBUG
+	if Debug == true {
+		fmt.Print("\x1b[38;5;124m")
+		fmt.Print("DEBUG \n")
+		fmt.Print("\x1b[38;5;141m")
+		fmt.Print(Serv, "\n")
+	}
+
+	fmt.Print("\x1b[38;5;4mPutting ", Inter, "in monitor mode...\n")
+	monCommand := ("airmon-ng start " + Inter)
+	_, err = exec.Command("sh", "-c", monCommand).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func arrayContains(sl []string, name string) bool {
